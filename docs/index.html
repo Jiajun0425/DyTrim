@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Learning Dynamics of Logits Debiasing for Long-Tailed Semi-Supervised Learning"> 
+  <meta name="keywords" content="Learning Dynamicsm, Logits Debiasing, Dataset Pruning, Semi-Supervised Learning"> <!-- TODO: add some keywords for search engine -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learning Dynamics of Logits Debiasing for Long-Tailed Semi-Supervised Learning</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome_6_7_2.all.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome_6_7_2.all.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Learning Dynamics of Logits Debiasing for Long-Tailed Semi-Supervised Learning
+          </h1>
+
+          <div class="publication-authors">
+              <!-- 作者列表 -->
+            <div class="is-size-4 author-list">
+              <span class="author-block">
+                <a href="https://cyue0316.github.io/" class="author-name">Yue Cheng</a><sup class="affiliation">*1, 2</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://jiajun0425.github.io/" class="author-name">Jiajun Zhang</a><sup class="affiliation">*1</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://github.com/Gaitxh" class="author-name">Xiaohui Gao</a><sup class="affiliation">3</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://faculty.bjtu.edu.cn/rjxy/7930.html" class="author-name">Weiwei Xing</a><sup class="affiliation">&#9993;1</sup>
+              </span>
+              <span class="author-block">
+                <a href="https://zhanxingzhu.github.io/" class="author-name">Zhanxing Zhu</a><sup class="affiliation">&#9993;4</sup>
+              </span>
+            
+          </div>
+              <div class="institutions is-size-5">
+              <span class="institution"><sup>1</sup> Beijing Jiaotong University</span>  
+              <span class="institution">&nbsp;&nbsp;</span>
+              <span class="institution"><sup>2</sup> Ant Group</span>  <br>
+              <span class="institution"><sup>3</sup> Northwest Polytechnical University</span>
+              <span class="institution">&nbsp;&nbsp;</span>
+              <span class="institution"><sup>4</sup> University of Southampton</span>  
+            </div>
+          
+             <!-- 贡献说明 -->
+            <div class="contribution-notes is-size-5">
+              <span class="note"><sup>*</sup>Equal Contribution</span>
+              <span class="note">&nbsp;&nbsp;</span>
+              <span class="note"><sup>&#9993;</sup> Corresponding Author</span>
+            </div>
+          
+            <div class="corresponding-authors is-size-5">
+              Contact: {yuecheng, jiajunzhang}@bjtu.edu.cn
+              </a> 
+              <!-- <a href="zhanglinfeng@sjtu.edu.cn">
+                zhanglinfeng@sjtu.edu.cn
+              </a> -->
+            </div>
+          </div>
+            
+            <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://openreview.net/pdf?id=e15SYMcsTs"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <!-- <i class="fas fa-file-pdf"></i> -->
+                      <i class="fa-solid fa-file-pdf" style="color: #ec4646;"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Arxiv Link. -->
+              <!-- <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/Jiajun0425/DyTrim"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>GitHub</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fa-regular fa-database"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span> -->
+              <!-- Model Link. -->
+              <!-- <span class="link-block">
+                <a href="https://huggingface.co/BytedTsinghua-SIA/DAPO-Qwen-32B"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"> -->
+                    <!-- <i class="fa-solid fa-face-smiling-hands"></i> -->
+                    <!-- <i class="fa-solid fa-face-smiling-hands" style="color: #FFD43B;"></i>
+                  </span>
+                  <span>Model</span>
+                  </a>
+              </span> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Video -->
+    <div class="columns is-centered">
+      <div class="column">
+        <p style="text-align: justify;">
+            <strong>TL;DR:</strong> Long-tailed distributions are prevalent in real-world semi-supervised learning (SSL), where pseudo-labels tend to favor majority classes, leading to degraded generalization. While many long-tailed semi-supervised learning (LTSSL) methods have been proposed, the mechanisms by which they implicitly debias logits remain poorly understood. In this work, we revisit LTSSL through the lens of learning dynamics and provide a theoretical characterization of logits debiasing. Specifically, we derive a step-wise decomposition of the logits updates, showing that predictions are dominated by class-imbalance bias that reliably reflects label priors. To expose this effect, we use the logits of a task-irrelevant baseline image as an indicator of accumulated bias and prove that they converge to the class prior. This provides a unified view where LTSSL remedies such as logit adjustment, reweighting, and resampling correspond to reshaping gradient dynamics. Based on this insight, we propose  DyTrim, a principle-based dynamic pruning framework that reallocates gradient budget through class-aware pruning on labeled data and confidence-based soft pruning on unlabeled data. We provide theoretical guarantees that DyTrim reduces class bias and improves generalization. Extensive experiments on standard LTSSL benchmarks show consistent gains across architectures and methods. 
+        </p>
+        </div>
+        </div>
+    </br>
+        <h2 class="subtitle has-text-centered">
+          <img src="images/pipeline.svg" style="display: block; margin: 0 auto; width: 150%;"/>
+        </h2>
+
+   </div>
+  </div>
+<!-- </section>    
+
+<section class="section"> -->
+
+  <div class="container is-max-desktop">
+    <!-- Abstract -->
+    <div class="columns is-centered has-text-centered">
+      <!-- <div class="column is-four-fifths"> -->
+          <div class="content has-text-justified">
+            <p>  
+            </p>  
+          </div>
+      <!-- </div> -->
+    </div>
+   
+        <!-- <section class="section"> -->
+          <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3"><br>Contributions</h2>
+          </div>
+          <div class="container is-max-desktop">
+          <!-- Q&A Section -->
+          <div class="columns is-centered">
+            <!-- <div class="qa-answer">
+              <div class="a-marker">
+                <span class="a-icon">1</span>
+              </div>
+              <div class="answer-text" style="font-size: 1em;">
+                <p>
+                  In CoTs, the majority of tokens are generated with low entropy, while only a small subset exhibits high entropy. These high-entropy minority tokens often act as "forks" in the reasoning process, guiding the model toward diverse reasoning paths. Maintaining high entropy at these critical forking tokens is beneficial for reasoning performance.
+                </p>
+              </div>
+            </div> -->
+
+            <div class="qa-answer" style="flex-direction: column; gap: 1rem;">
+              <div class="qa-row" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                <div class="a-marker" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                      <i class="fas fa-ruler-combined fa-2x fa-fw" style="color: #1f6110;"></i>
+                </div>
+                <div class="answer-text" style="font-size: 1em;">
+                  <p>
+                    <b>Learning Dynamics Analysis.</b> We analyze long-tailed semi-supervised learning from the perspective of learning dynamics and show that class imbalance induces accumulated logit bias that dominates model predictions.
+                </div>
+              </div>
+
+              <div class="qa-row" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                <div class="a-marker" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-dna fa-2x fa-fw" style="color: #1f6110;"></i>
+                </div>
+                <div class="answer-text" style="font-size: 1em;">
+                  <p>
+                    <b>Baseline Image as Bias Indicator.</b> We introduce a task-irrelevant baseline image and theoretically show that its logits converge to the class prior, providing a direct and interpretable indicator of accumulated class bias.
+                </div>
+              </div>
+
+              <div class="qa-row" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                <div class="a-marker" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-link fa-2x fa-fw" style="color: #1f6110;"></i>
+                </div>
+                <div class="answer-text" style="font-size: 1em;">
+                  <p>
+                    <b>Unified View of Debiasing Methods.</b> Within this framework, existing debiasing strategies such as logit adjustment, reweighting, and resampling are unified as mechanisms that reshape gradient dynamics to counteract bias accumulation.
+                </div>
+              </div>
+
+              <div class="qa-row" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                <div class="a-marker" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-chart-bar fa-2x fa-fw" style="color: #1f6110;"></i>
+                </div>
+                <div class="answer-text" style="font-size: 1em;">
+                  <p>
+                    <b>Dynamic Dataset Pruning for LTSSL.</b> Based on these insights, we propose DyTrim, a dynamic dataset pruning framework reallocates gradient budget via class-aware pruning on labeled data and confidence-based soft pruning on unlabeled data, outperforming existing state-of-the-art baselines.
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+<!-- </section> -->
+
+
+<!-- <section class="section"> -->
+<div class="container is-max-desktop">
+  <div class="columns is-centered has-text-centered">
+    <div class="column">
+
+      <h2 class="title is-3"><br>Learning Dynamics of Semi-supervised Learning</h2>
+      <div class="content has-text-justified">
+        <p>
+          FixMatch updates parameters using one supervised gradient and one consistency gradient at each step:
+        </p>
+
+        <p>
+          \[
+          \begin{gathered}
+          \Delta \theta \triangleq \theta ^{t+1} - \theta^t = -\eta \cdot \left(\nabla \mathcal{L}_{sup}(f_\theta(\alpha(x_b)), y_b)+\nabla \mathcal{L}_{con}(f_\theta(\alpha(u_b)), f_\theta(\mathcal{A}(u_b))\right); \\
+          \Delta f(x_o) \triangleq f_{\theta^{t+1}}(x_o)-f_{\theta^{t}}(x_o).
+          \end{gathered}
+          \]
+        </p>
+
+        <p>
+          Accordingly, the one-step change of the log-probability at an observation point \(x_o\) decomposes into a supervised influence
+          and a consistency influence:
+        </p>
+
+        <p>
+          \[
+          \Delta \log \pi^{t}(y|x_o) \triangleq
+          \Delta \log \pi_\theta^{t,\mathrm{sup}}(y\mid x_o;x_b) +
+          \Delta \log \pi_\theta^{t,\mathrm{con}}(y\mid x_o;u_b).
+          \]
+        </p>
+
+        <p>
+          Each term further factorizes into three interpretable components: an output-sensitivity term \(\mathcal{T}^t(x_o)\),
+          an eNTK coupling kernel \(\mathcal{K}^t(\cdot,\cdot)\), and a gradient signal \(\mathcal{G}^t(\cdot,\cdot)\):
+        </p>
+
+        <p>
+          \[
+          \small{
+          \begin{gathered}
+          \Delta \log \pi_\theta^{t,\mathrm{sup}}(y\mid x_o;x_b)
+          = -\eta\, \mathcal{T}^t(x_o)\, \mathcal{K}^t(x_o, \alpha(x_b))\, \mathcal{G}_{\mathrm{sup}}^t(\alpha(x_b), y_b)
+          + \mathcal{O}\!\left(\eta^2 \|\nabla_\theta \mathbf{z}(\alpha(x_b))\|_{\text{op}}^2\right)\\
+          \Delta \log \pi_\theta^{t,\mathrm{con}}(y\mid x_o;u_b)
+          = -\eta\, \mathcal{T}^t(x_o)\, \mathcal{K}^t(x_o, \mathcal{A}(u_b))\, \mathcal{G}_{\mathrm{con}}^t(\mathcal{A}(u_b),\hat q_b^t)
+          + \mathcal{O}\!\left(\eta^2 \|\nabla_\theta \mathbf{z}(\mathcal{A}(u_b))\|_{\text{op}}^2\right).
+          \end{gathered}}
+          \]
+        </p>
+
+        <p>
+          This decomposition explains how pseudo-label quality interacts with class imbalance over many steps:
+          correct pseudo-labels reinforce supervised signals, while incorrect pseudo-labels can accumulate into persistent errors;
+          under imbalance, majority-class bias can dominate the dynamics and mask corrective influences.
+        </p>
+      </div>
+
+      <h2 class="title is-3"><br>Learning Dynamics Analysis of Accumulated Bias</h2>
+      <div class="content has-text-justified">
+        <p>
+          Per-step influence alone does not reveal the global effect of imbalance. DyTrim introduces a task-irrelevant baseline image
+          \(\mathcal{I}\) (typically solid color) to isolate and track the model’s accumulated bias state.
+          With affine normalization (e.g., BatchNorm), the logits on a solid-color baseline become invariant to pixel intensity and
+          reduce to normalization bias parameters:
+        </p>
+
+        <p>
+          \[
+          h(\mathcal{I}) = \boldsymbol{b},
+          \quad
+          \pi_\theta(\mathcal{I}) = \texttt{Softmax}(\boldsymbol{b}).
+          \]
+        </p>
+
+        <p>
+          Tracking the baseline distribution over training provides a direct measurement of how class-level bias evolves:
+        </p>
+
+        <p>
+          \[
+          \Delta \log \pi^{t}(y|\mathcal{I})
+          \triangleq
+          \log \pi_{\theta^{t+1}}(y|\mathcal{I}) -
+          \log \pi_{\theta^{t}}(y|\mathcal{I}).
+          \]
+        </p>
+
+        <p>
+          The corresponding one-step influence on the baseline image takes a similar factorized form:
+        </p>
+
+        <p>
+          \[
+          \small{
+          \Delta \log \pi_\theta^{t}(y\mid \mathcal{I};x)
+          = -\eta\, \mathcal{T}^t(\mathcal{I})\, \mathcal{K}^t(\mathcal{I}, x)\, \mathcal{G}^t(x, y)
+          + \mathcal{O}\!\left(\eta^2 \|\nabla_\theta \mathbf{z}(x)\|_{\text{op}}^2\right).}
+          \]
+        </p>
+
+        <p>
+          Since \(\mathcal{I}\) lies far from the data manifold, \(\mathcal{K}^t(\mathcal{I},x)\) is typically small,
+          making \(\pi_\theta(\mathcal{I})\) a clean indicator that reflects global bias rather than semantic content.
+        </p>
+
+        <p>
+          As the number of labeled and unlabeled samples from the majority class increases, the output of $\pi^t_{\theta}(\mathcal{I})$ will be progressively squeezed into a biased long-tailed distribution. Even with $\mathcal{G}^t$ guiding the adaptation direction, this process can still be steered by the biased state encoded in $\pi^t_{\theta}(\mathcal{I})$, further amplifying the long-tailed shift, as illustrated in Figure.
+          <img src="./images/logits.svg" style="display: block; margin: 0 auto; width: 100%;"/>
+        </p>
+      </div>
+
+      <h2 class="title is-3"><br>Dynamics Analysis of Logits Debiasing Methods</h2>
+      <div class="content has-text-justified">
+        <p>
+          Under the baseline-image dynamics, different debiasing strategies can be compared by how they reshape the gradient flow.
+          For logits adjustment (LA), the adjusted logits are:
+        </p>
+
+        <p>
+          \[
+          \tilde{\pi}_{\theta}(y|x)=\texttt{Softmax}(\tilde{\mathbf z}(x)),\qquad
+          \tilde{\mathbf z}(x)=g_{\theta}(x)-\lambda\boldsymbol{\phi}.
+          \]
+        </p>
+
+        <p>
+          In CDMAD-style implementations, LA is closely related to subtracting a class-prior term derived from the baseline distribution
+          \(\pi=\pi_\theta(\mathcal{I})\), resulting in an influence form with a modified gradient term:
+        </p>
+
+        <p>
+          \[
+          \Delta \log \tilde{\pi}_\theta^{\,t}(y\mid \mathcal I;\,x_b)
+          = -\eta\,\mathcal T^t(\mathcal I)\,
+          \mathcal K^t(\mathcal I,x_b)\,
+          \tilde{\mathcal G}^t_{LA}(x, y)
+          + \mathcal O\!\left(\eta^2\|\nabla_\theta \tilde{\mathbf z}(x_b)\|_{\text{op}}^2\right).
+          \]
+        </p>
+
+        <p>
+          Reweighting scales both the coupling kernel and the gradient signal by class-dependent weights, increasing the effective
+          contribution of under-represented classes and attenuating head classes:
+        </p>
+
+        <p>
+          \[
+          \small{
+          \Delta \log \pi_\theta^{t,rw}(y\mid \mathcal{I};x)
+          = -\eta\, \mathcal{T}^t(\mathcal{I})\,
+          \tilde{\mathcal{K}}^t_{rw}(\mathcal{I}, x; w^c)\,
+          \tilde{\mathcal{G}}_{rw}^t(x, y; w^c)
+          + \mathcal{O}\!\left(\eta^2 \|\nabla_\theta \mathbf{z}(x)\|_{\text{op}}^2\right).}
+          \]
+        </p>
+
+        <p>
+          Resampling mitigates imbalance by changing how often each class is drawn, rather than modifying the loss.
+          Let \(\mathbb{P}_{\mathrm{rs}}(x \in c)=r^c\) denote the (possibly normalized) sampling ratio for class \(c\).
+          The per-step update of the baseline log-posterior under resampling becomes:
+        </p>
+        <p>
+          \[
+          \small{
+          \begin{gathered}
+          \Delta \log \pi_\theta^{t,\mathrm{rs}}(y\mid \mathcal{I};x)
+          = -\eta\, \mathcal{T}^t(\mathcal{I}) \,\tilde{\mathcal{K}}^t_{rs}(\mathcal{I}, x; r^c)\, \tilde{\mathcal{G}}_{rs}^t(x, y; r^c)
+          + \mathcal{O}\!\left(\eta^2 \lVert\nabla_\theta \mathbf{z}(x)\rVert_{\mathrm{op}}^2\right),
+          \end{gathered}}
+          \]
+        </p>
+      </div>
+
+      <h2 class="title is-3"><br>DyTrim: A Baseline Image Guided Data Pruning Framework</h2>
+      <div class="content has-text-justified">
+        <p>
+          DyTrim moves debiasing to the data-selection level. Instead of modifying logits or loss, dynamic pruning gates which samples
+          participate in each update via step-dependent scores and thresholds. The pruning mechanism multiplies the gradient signal by a
+          participation mask \(\mathcal{P}_t(x)\), effectively zeroing out kernel–gradient interactions for low-utility samples:
+        </p>
+
+        <p>
+          \[
+          \small{
+          \begin{gathered}
+          \Delta \log \pi_\theta^{t,\mathrm{prune}}(y\mid \mathcal{I};x)
+          = -\eta\, \mathcal{T}^t(\mathcal{I})\, \mathcal{K}^t(\mathcal{I}, x)\, \tilde{\mathcal{G}}_{dytr}^t(x, y)
+          + \mathcal{O}\!\left(\eta^2 \|\nabla_\theta \mathbf{z}(x)\|_{\text{op}}^2\right)\\
+          \tilde{\mathcal{G}}_{dytr}^t(x, y) = \mathcal{P}_t(x)\, \mathcal{G}^t(x, y)
+          \end{gathered}}
+          \]
+        </p>
+
+        <p>
+          DyTrim uses two complementary pruning rules to handle labeled long-tail and unlabeled distribution mismatch:
+        </p>
+
+        <ul>
+          <li>
+            <b>Labeled: class-aware hard pruning.</b>
+            The per-class keep ratio is guided by the baseline distribution
+            \(r_c = \pi_\theta(\mathcal{I})_c\). For class \(c\), DyTrim prunes the \(r_c \times N_c\) smallest-score samples
+            (using supervised loss as the utility score), removing redundant head-class examples.
+          </li>
+          <li>
+            <b>Unlabeled: label-insensitive soft pruning.</b>
+            Since unlabeled imbalance and pseudo-label noise are unknown, DyTrim uses a randomized keep rate \(r\),
+            an adaptive score threshold, and a debiased confidence threshold \(\tau\) to suppress low-utility or low-confidence unlabeled updates.
+          </li>
+        </ul>
+      </div>
+
+      <h2 class="title is-3"><br>Experimental Results</h2>
+      <div class="content has-text-justified">
+        <p>
+          <b>Results on ResNet backbones.</b> Under the consistent condition where $\gamma_u$ is known and matched to $\gamma_l$, the results show that CISSL algorithms consistently outperform their vanilla SSL counterparts by mitigating class imbalance while effectively exploiting unlabeled data. Among them, the proposed DyTrim achieves the best performance across all imbalance ratios. Compared with the state-of-the-art CDMAD, DyTrim improves bACC by 1.2% and GM by 1.4% on average, without incurring additional computational overhead. Furthermore, when integrated into FlexMatch and FreeMatch, DyTrim yields substantial improvements, boosting bACC/GM by 2--3% on average. 
+          <img src="./images/result_resnet.svg" style="display: block; margin: 0 auto; width: 85%;"/>
+        </p>
+        <p>
+          <b>Results on ViT backbones.</b> On CIFAR-10-LT, DyTrim yields the best results, improving bACC 0.6% over CDMAD and nearly 4% over FixMatch when $\gamma_l = \gamma_u = 100$. Under the inconsistent condition, DyTrim maintains a clear margin, surpassing CDMAD almost 2%. On CIFAR-100-LT, although the absolute accuracies are lower due to the increased difficulty, DyTrim still matches or slightly improves upon CDMAD, while consistently outperforming FixMatch.
+          <img src="./images/result_vit.svg" style="display: block; margin: 0 auto; width: 85%;"/>
+        </p>
+      </div>
+
+      <h2 class="title is-3"><br>Further Analysis</h2>
+      <div class="content has-text-justified">
+        <p>
+          <b>Effectiveness of each component.</b> We conducted ablation studies on CIFAR-10-LT to assess the contribution of each component in DyTrim, varying the hyperparameter $\gamma = \gamma_l = \gamma_u$ across 50, 100, and 150. As shown in Table, the best performance was achieved when both labeled and unlabeled pruning were combined with rescaling. Removing rescaling led to a bACC drop of 0.8–2.1 points across $\gamma$ values. Excluding either pruning component also reduced performance (<em>e.g.</em>, -0.5 and -0.3 at $\gamma=50$ without unlabeled or labeled pruning, respectively). Removing both pruning strategies resulted in the most significant degradation. These results highlighted the complementary benefits of pruning and rescaling.
+          <img src="./images/component.svg" style="display: block; margin: 0 auto; width: 85%;"/>
+        </p>
+        <p>
+          <b>Comparison of class distributions before and after pruning.</b> Figure compares the class distributions before and after applying DyTrim on the labeled, unlabeled and full training sets. Across all three subsets, pruning consistently reduces the proportion of head classes while preserving or slightly increasing the relative proportion of tail classes. This produces a noticeably flatter long-tailed distribution. Unlike traditional pruning methods, which typically remove samples that contribute least to training progress, the behavior of DyTrim is different because the pruning decision is guided by baseline logits and the reliability of pseudo-labels. This tends to eliminate redundant head-class samples and low-quality unlabeled samples while rarely discarding the already scarce tail-class data. Consequently, the resulting effective training subset becomes more balanced without sacrificing essential information from tail classes.
+          <img src="./images/class_distribution.svg" style="display: block; margin: 0 auto; width: 100%;"/>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- </section> -->
+
+  <div class="container is-max-desktop">
+    <!-- Conclusion -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3"><br>Conclusion</h2>
+
+        <div class="content has-text-justified">
+          <ol>
+            
+            <!-- <li> -->
+              In this work, we provide a theoretical characterization of class bias in long-tailed semi-supervised learning (LTSSL) through an in-depth analysis of the learning dynamics. We derive a step-wise decomposition of logit updates, demonstrating how class imbalance dominates predictions and how debiasing methods, such as logit adjustment, reweighting, and resampling. Our theoretical insights bridge the gap between existing methods and their effect on gradient dynamics, highlighting the critical role of sample-level interventions. Based on this foundation, we introduce DyTrim, a dynamic pruning framework that mitigates class imbalance by reallocating gradient budgets. Empirical results across multiple benchmarks and SSL methods demonstrate that DyTrim consistently improves performance.
+            <!-- </li> -->
+
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style>
+  .qa-card {
+    background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin: 2.5rem 0;
+    padding: 2.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .qa-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(255,0,0,0.15); /* 红色 */
+  }
+  
+  .qa-card:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(180deg, #FF0000 0%, #308030 100%); /* 红到绿 */
+  }
+  
+  .q-marker {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .q-number {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #FF0000; /* 红色 */
+    min-width: 50px;
+    position: relative;
+  }
+  
+  .q-number:after {
+    content: "";
+    position: absolute;
+    right: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background: #308030;
+    border-radius: 50%;
+  }
+  
+  .q-icon, .a-icon {
+    font-size: 1.8rem;
+    font-weight: 800;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .q-icon {
+    background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%); /* 红色渐变 */
+    color: white;
+  }
+  
+.a-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1f6110;
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
+  margin-right: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+<!-- .a-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2d6a4f;
+  color: white;
+  border-radius: 50%;
+
+} -->
+  .qa-question {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .question-text {
+    font-size: 1.3rem;
+    color: #840b0b;
+    margin: 0;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 2rem;
+  }
+  
+  .question-text:before {
+    content: "?";
+    position: absolute;
+    left: 0;
+    top: -0.2em;
+    font-size: 1.8em;
+    color: #FF0000; /* 红色 */
+    opacity: 0.2;
+    font-weight: 800;
+  }
+  
+  .qa-answer {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(76,175,80,0.05);
+    border-radius: 12px;
+    position: relative;
+    margin-left: 0rem;
+  }
+  
+  .answer-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #37474f;
+    position: relative;
+    padding-left: 2rem;
+  }
+  
+  .answer-text:before {
+    content: "➤";
+    position: absolute;
+    left: 0;
+    color: #308030;
+    font-size: 1.2em;
+    top: 0.1em;
+  }
+
+  @media (max-width: 480px) {
+    .qa-card {
+      padding: 1.2rem;
+      margin: 1.5rem 0;
+      border-radius: 12px;
+    }
+
+    .q-marker {
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .q-number {
+      font-size: 1.5rem !important;
+      min-width: 40px;
+    }
+
+    .q-icon, .a-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 1.4rem;
+      border-radius: 8px;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      line-height: 1.4;
+      padding-left: 1.5rem;
+    }
+
+    .qa-answer {
+      margin: 1.2rem 0 0 0;
+      padding: 1rem;
+      border-radius: 10px;
+      gap: 1rem;
+    }
+
+    .answer-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      padding-left: 1.5rem;
+    }
+
+    .answer-text:before {
+      left: -0.2rem;
+    }
+
+    .qa-card:before {
+      width: 3px;
+    }
+
+    p {
+      margin-bottom: 0.8em !important;
+    }
+
+    .title.is-3 {
+      font-size: 1.5rem !important;
+      margin-bottom: 2rem !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .qa-card {
+      padding: 1.5rem;
+    }
+    @media (max-width: 480px) {
+      .qa-card {
+        padding: 1.2rem;
+      }
+    }
+  }
+  
+  /* @media (max-width: 768px) {
+    .qa-card {
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .qa-answer {
+      margin-left: 0;
+    }
+    .question-text {
+      padding-left: 0;
+    }
+    .question-text:before {
+      display: none;
+    }
+  } */
+</style>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Fully Open-Source -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">BibTeX</h2>
+        <div class="content has-text-justified">
+          <pre><code>@inproceedings{cheng2026dytrim,
+  title     = {Learning Dynamics of Logits Debiasing for Long-Tailed Semi-Supervised Learning},
+  author    = {Cheng, Yue and Zhang, Jiajun and Gao, Xiaohui and Xing, Weiwei and Zhu, Zhanxing},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2026}
+}
+</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</body>
+</html>
